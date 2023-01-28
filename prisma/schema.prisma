@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  id         Int       @id @default(autoincrement())
+  first_name String    @db.VarChar(255)
+  last_name  String    @db.VarChar(255)
+  email      String    @db.VarChar(255)
+  password   String    @db.VarChar(255)
+  role_id    Int
+  user_role  user_role @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_role_id")
+}
+
+model user_role {
+  id        Int    @id
+  role_name String @db.VarChar(255)
+  user      user[]
+}
