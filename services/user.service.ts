@@ -1,6 +1,6 @@
-import { UserData, UserRole } from "../models/user.data.model";
+import { UserData, UserLoginData, UserRole } from "../models/user.data.model";
 
-const CreateUserKeys = {
+const UserDataKeys = {
     FIRST_NAME: "FirstName",
     LAST_NAME: "LastName",
     EMAIL: "Email",
@@ -9,80 +9,118 @@ const CreateUserKeys = {
 }
 
 export class UserService {
-    validateCreateUserData(data: any): boolean {
+    validateUserData(data: any): boolean {
         // check if is there any missing key in create user data
-        for (const key of Object.values(CreateUserKeys)) {
+        for (const key of Object.values(UserDataKeys)) {
             if (data[key] === null || data[key] === undefined) {
-                console.log(`Create user data object doesn't have '${key}' key!`);
+                console.log(`User data object doesn't have '${key}' key!`);
                 return false;
             }
         }
 
         // check first name type
-        if (typeof data[CreateUserKeys.FIRST_NAME] !== 'string') {
-            console.log(`Create user data first name isn't string!`);
+        if (typeof data[UserDataKeys.FIRST_NAME] !== 'string') {
+            console.log(`User data first name isn't string!`);
             return false;
         }
 
         // check last name type
-        if (typeof data[CreateUserKeys.LAST_NAME] !== 'string') {
-            console.log(`Create user data last name isn't string!`);
+        if (typeof data[UserDataKeys.LAST_NAME] !== 'string') {
+            console.log(`User data last name isn't string!`);
             return false;
         }
 
         // check email type
-        if (typeof data[CreateUserKeys.EMAIL] !== 'string') {
-            console.log(`Create user data email isn't string!`);
+        if (typeof data[UserDataKeys.EMAIL] !== 'string') {
+            console.log(`User data email isn't string!`);
             return false;
         }
 
         // check password type
-        const userPswd = data[CreateUserKeys.PASSWORD];
+        const userPswd = data[UserDataKeys.PASSWORD];
         if (typeof userPswd !== 'string' && typeof userPswd !== 'number') {
-            console.log(`Create user data password isn't string or number!`);
+            console.log(`User data password isn't string or number!`);
             return false;
         }
         if (typeof userPswd === 'number') {
-            data[CreateUserKeys.PASSWORD] = userPswd.toString();
+            data[UserDataKeys.PASSWORD] = userPswd.toString();
         }
 
         // check role type
-        const userRole = data[CreateUserKeys.ROLE];
+        const userRole = data[UserDataKeys.ROLE];
         if (typeof userRole !== 'string') {
-            console.log(`Create user data role isn't string!`);
+            console.log(`User data role isn't string!`);
             return false;
         }
         // check if role is valid
         let validRole = false;
         if (userRole === "Admin") {
             validRole = true;
-            data[CreateUserKeys.ROLE] = UserRole.ADMIN;
+            data[UserDataKeys.ROLE] = UserRole.ADMIN;
         } else if (userRole === "User") {
             validRole = true;
-            data[CreateUserKeys.ROLE] = UserRole.USER;
+            data[UserDataKeys.ROLE] = UserRole.USER;
         } else {
             validRole = false;
         }
         if (validRole == false) {
-            console.log(`Create user data role is invalid!`);
+            console.log(`User data role is invalid!`);
             return false;
         }
 
         return true;
     }
 
+    validateUserLoginData(data: any) {
+        const keys = [UserDataKeys.EMAIL, UserDataKeys.PASSWORD];
+        for (const key of keys) {
+            if (data[key] === null || data[key] === undefined) {
+                console.log(`User login data object doesn't have '${key}' key!`);
+                return false;
+            }
+        }
+
+        // check email type
+        if (typeof data[UserDataKeys.EMAIL] !== 'string') {
+            console.log(`User login data email isn't string!`);
+            return false;
+        }
+
+        // check password type
+        const userPswd = data[UserDataKeys.PASSWORD];
+        if (typeof userPswd !== 'string' && typeof userPswd !== 'number') {
+            console.log(`User data password isn't string or number!`);
+            return false;
+        }
+        if (typeof userPswd === 'number') {
+            data[UserDataKeys.PASSWORD] = userPswd.toString();
+        }
+
+        return true;
+    }
+
     getUserData(data: any): UserData {
-        if (!this.validateCreateUserData(data)) {
+        if (!this.validateUserData(data)) {
             return null;
         }
 
         return {
-            firstName: data[CreateUserKeys.FIRST_NAME],
-            lastName: data[CreateUserKeys.LAST_NAME],
-            email: data[CreateUserKeys.EMAIL],
-            password: data[CreateUserKeys.PASSWORD],
-            role: data[CreateUserKeys.ROLE]
+            firstName: data[UserDataKeys.FIRST_NAME],
+            lastName: data[UserDataKeys.LAST_NAME],
+            email: data[UserDataKeys.EMAIL],
+            password: data[UserDataKeys.PASSWORD],
+            role: data[UserDataKeys.ROLE]
         };
+    }
 
+    getUserLoginData(data: any): UserLoginData {
+        if (!this.validateUserLoginData(data)) {
+            return null;
+        }
+
+        return {
+            email: data[UserDataKeys.EMAIL],
+            password: data[UserDataKeys.PASSWORD],
+        };
     }
 }

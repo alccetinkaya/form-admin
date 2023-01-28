@@ -31,3 +31,19 @@ app.post('/user/create', async (req, res) => {
 
     res.send("User has successfully created");
 })
+
+app.post('/user/login', async (req, res) => {
+    let userLoginData = userSvc.getUserLoginData(req.body);
+    if (!userLoginData) {
+        res.status(401).send("User login data is invalid!");
+        return;
+    }
+
+    let rval = await dbSvc.loginUser(userLoginData);
+    if (!rval) {
+        res.status(404).send("User couldn't be logged in!");
+        return;
+    }
+
+    res.send("User has successfully logged in");
+})

@@ -10,3 +10,8 @@ export interface UserData {
     password: string;
     role: UserRole;
 }
+
+export interface UserLoginData {
+    email: string,
+    password: string
+}

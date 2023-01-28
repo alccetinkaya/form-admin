@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import { UserData } from '../models/user.data.model'
+import { UserData, UserLoginData } from '../models/user.data.model'
 const prisma = new PrismaClient()
 
 export class DatabaseService {
@@ -38,5 +38,17 @@ export class DatabaseService {
         }
 
         return true;
+    }
+
+    async loginUser(userLoginData: UserLoginData): Promise<boolean> {
+        const login = await prisma.user.findFirst({
+            where: {
+                email: userLoginData.email,
+                password: userLoginData.password
+            }
+        });
+
+        const loginData = login as unknown as UserLoginData;
+        return loginData ? true : false;
     }
 }
