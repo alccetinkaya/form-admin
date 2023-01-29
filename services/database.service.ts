@@ -13,6 +13,7 @@ export interface DatabaseSvcInterface {
     addForm(label: string, formId: string): Promise<boolean>;
     getForm(label: string): Promise<FormTable>;
     isFormExists(label: string): Promise<boolean>;
+    deleteForm(label: string): Promise<boolean>;
 }
 
 export class DatabaseService {
@@ -101,7 +102,9 @@ export class DatabaseService {
             where: {
                 label: label
             }
-        });
+        }).catch(async (e) => {
+            console.log(`DB svc get form failed: ${e.message}`);
+        })
 
         return !form ? null : {
             id: form.id as unknown as number,
@@ -115,5 +118,16 @@ export class DatabaseService {
         if (form === null) return false;
         if (form.label === label) return true;
         return false;
+    }
+
+    async deleteForm(label: string): Promise<boolean> {
+        const rval = await prisma.form.deleteMany({
+            where: {
+                label: label
+            }
+        }).catch(async (e) => {
+            console.log(`DB svc delete form failed: ${e.message}`);
+        })
+        return rval ? true : false;
     }
 }

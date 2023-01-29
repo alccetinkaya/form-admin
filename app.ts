@@ -54,3 +54,18 @@ app.post('/form/create', async (req, res) => {
     let resp = await formSvc.createForm(req.body);
     res.status(resp.statusCode).send(resp.message);
 })
+
+app.put('/form/update', async (req, res) => {
+    let resp = await formSvc.updateForm(req.body);
+    res.status(resp.statusCode).send(resp.message);
+})
+
+app.delete('/form/delete', async (req, res) => {
+    let resp = await formSvc.deleteForm(req.body);
+    res.status(resp.statusCode).send(resp.message);
+})
+
+app.get('/form/view', async (req, res) => {
+    let resp = await formSvc.viewForm(req.body);
+    res.status(resp.statusCode).send(resp.message);
+})
