@@ -1,4 +1,4 @@
-import { UserData, UserLoginData, UserRole } from "../models/user.data.model";
+import { UserData, UserLoginData, UserRoleID } from "../models/user.data.model";
 
 const UserDataKeys = {
     FIRST_NAME: "FirstName",
@@ -8,7 +8,12 @@ const UserDataKeys = {
     ROLE: "Role"
 }
 
-export class UserService {
+export interface UserSvcInterface {
+    getUserData(data: any): UserData;
+    getUserLoginData(data: any): UserLoginData;
+}
+
+export class UserService implements UserSvcInterface {
     validateUserData(data: any): boolean {
         // check if is there any missing key in create user data
         for (const key of Object.values(UserDataKeys)) {
@@ -56,10 +61,10 @@ export class UserService {
         let validRole = false;
         if (userRole === "Admin") {
             validRole = true;
-            data[UserDataKeys.ROLE] = UserRole.ADMIN;
+            data[UserDataKeys.ROLE] = UserRoleID.ADMIN;
         } else if (userRole === "User") {
             validRole = true;
-            data[UserDataKeys.ROLE] = UserRole.USER;
+            data[UserDataKeys.ROLE] = UserRoleID.USER;
         } else {
             validRole = false;
         }

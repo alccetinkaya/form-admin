@@ -1,4 +1,4 @@
-export enum UserRole {
+export enum UserRoleID {
     ADMIN,
     USER
 }
@@ -8,7 +8,7 @@ export interface UserData {
     lastName: string
     email: string
     password: string;
-    role: UserRole;
+    role: UserRoleID;
 }
 
 export interface UserLoginData {

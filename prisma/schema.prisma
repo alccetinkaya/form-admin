@@ -18,7 +18,31 @@ model user {
 }
 
 model user_role {
-  id        Int    @id
-  role_name String @db.VarChar(255)
-  user      user[]
+  id             Int              @id
+  role_name      String           @db.VarChar(255)
+  role_authority role_authority[]
+  user           user[]
+}
+
+model authority {
+  id             Int              @id @default(autoincrement())
+  name           String           @db.VarChar(255)
+  role_authority role_authority[]
+}
+
+model role_authority {
+  id        Int       @id @default(autoincrement())
+  role_id   Int
+  auth_id   Int
+  is_active Boolean
+  authority authority @relation(fields: [auth_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_auth_id")
+  user_role user_role @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_role_id")
+}
+
+model form {
+  id      BigInt @default(autoincrement())
+  label   String @db.VarChar
+  form_id String @db.VarChar
+
+  @@id([label, form_id])
 }

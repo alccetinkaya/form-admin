@@ -3,12 +3,14 @@ const app = express();
 app.use(express.json());
 
 import { DatabaseService } from './services/database.service';
+import { FormService } from './services/form.service';
 import { UserService } from './services/user.service';
 
 const PORT = 3000;
 
 const userSvc = new UserService();
 const dbSvc = new DatabaseService();
+const formSvc = new FormService(dbSvc, userSvc);
 
 // run the server!
 app.listen({ port: PORT }, (err) => {
@@ -46,4 +48,9 @@ app.post('/user/login', async (req, res) => {
     }
 
     res.send("User has successfully logged in");
+})
+
+app.post('/form/create', async (req, res) => {
+    let resp = await formSvc.createForm(req.body);
+    res.status(resp.statusCode).send(resp.message);
 })
