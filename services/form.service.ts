@@ -2,11 +2,10 @@ const dotenv = require('dotenv').config();
 import axios from 'axios';
 import { FormRequest } from '../models/form.data.model';
 import { AuthID } from '../models/role.data.model';
-import { UserLoginData } from '../models/user.data.model';
 import { DatabaseSvcInterface } from './database.service';
 import { UserSvcInterface } from './user.service';
 
-const token = "tfp_eEtALDkPiprEGK7kWrTrMqBNyhnQSLgpAyFmzjc6NFt_3pZrrX5EX944kH";
+const token =  process.env.TOKEN;
 const config = {
     headers: { Authorization: `Bearer ${token}` }
 };
@@ -16,7 +15,14 @@ export interface FormSvcResp {
     message: string;
 }
 
-export class FormService {
+export interface FormSvcInterface {
+    createForm(data: any): Promise<FormSvcResp>;
+    updateForm(data: any): Promise<FormSvcResp>;
+    deleteForm(data: any): Promise<FormSvcResp>;
+    viewForm(data: any): Promise<FormSvcResp>;
+}
+
+export class FormService implements FormSvcInterface {
     _dbSvc: DatabaseSvcInterface;
     _userSvc: UserSvcInterface;
 
