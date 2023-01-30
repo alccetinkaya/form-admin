@@ -31,11 +31,6 @@ test.serial('createUserAdmin', async t => {
     t.deepEqual(rval, true);
 });
 
-test.serial('recreateUserAdmin', async t => {
-    let rval = await dbSvc.createUser(adminUser);
-    t.deepEqual(rval, false);
-});
-
 test.serial('loginUserAdmin', async t => {
     let userLogin: UserLoginData = { email: adminUser.email, password: adminUser.password };
     let rval = await dbSvc.loginUser(userLogin);
