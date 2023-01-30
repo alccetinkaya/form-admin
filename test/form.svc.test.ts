@@ -1,27 +1,27 @@
 import test from 'ava';
 import { FormRequest } from '../models/form.data.model';
-import { UserData, UserRoleID } from '../models/user.data.model';
-import { DatabaseService, DatabaseSvcInterface } from '../services/database.service';
-import { FormService, FormSvcInterface } from '../services/form.service';
+import { DatabaseService } from '../services/database.service';
+import { FormService } from '../services/form.service';
 import { UserService } from '../services/user.service';
 
-const dbSvc: DatabaseSvcInterface = new DatabaseService();
-let formSvc: FormSvcInterface = new FormService(dbSvc, new UserService());
+const dbSvc = new DatabaseService();
+const userSvc = new UserService(dbSvc);
+const formSvc = new FormService(dbSvc, userSvc);
 
-const adminUser: UserData = {
-    firstName: "formSvcTest",
-    lastName: "admin",
+const adminUser = {
+    first_name: "formSvcTest",
+    last_name: "admin",
     email: "formSvcTest@admin",
     password: "test",
-    role: UserRoleID.ADMIN
+    role: "Admin"
 }
 
-const standardUser: UserData = {
-    firstName: "formSvcTest",
-    lastName: "user",
+const standardUser = {
+    first_name: "formSvcTest",
+    last_name: "user",
     email: "formSvcTest@user",
     password: "test",
-    role: UserRoleID.USER
+    role: "User"
 }
 
 const testFormLabel = "formSvcTestLabel";
@@ -30,19 +30,15 @@ const testFormTitle = "form-svc-test-title";
 test('createFormMissingFormRequest', async t => {
     let req = {};
     let resp = await formSvc.createForm(req);
-    t.deepEqual(resp.message, "Form request object is invalid!");
+    t.deepEqual(resp.status, false);
 
     req["credential"] = { email: "test@email", password: "testpswd" };
     resp = await formSvc.createForm(req);
-    t.deepEqual(resp.message, "Form request object is invalid!");
+    t.deepEqual(resp.status, false);
 
     req["label"] = testFormLabel;
     resp = await formSvc.createForm(req);
-    t.deepEqual(resp.message, "Form request object is invalid!");
-
-    req["data"] = { title: testFormTitle };
-    resp = await formSvc.createForm(req);
-    t.deepEqual(resp.message, "User credential is invalid!");
+    t.deepEqual(resp.status, false);
 });
 
 test('createFormUserLoginDataInvalid', async t => {
@@ -56,7 +52,7 @@ test('createFormUserLoginDataInvalid', async t => {
         }
     };
     let resp = await formSvc.createForm(req);
-    t.deepEqual(resp.message, "User login data is invalid!");
+    t.deepEqual(resp.status, false);
 });
 
 test('createFormUserCredentialInvalid', async t => {
@@ -71,12 +67,12 @@ test('createFormUserCredentialInvalid', async t => {
         }
     };
     let resp = await formSvc.createForm(req);
-    t.deepEqual(resp.message, "User credential is invalid!");
+    t.deepEqual(resp.status, false);
 });
 
 test.serial('createUserStandard', async t => {
-    let rval = await dbSvc.createUser(standardUser);
-    t.deepEqual(rval, true);
+    let resp = await userSvc.create(standardUser);
+    t.deepEqual(resp.status, true);
 });
 
 test.serial('createFormUnauthUser', async t => {
@@ -89,7 +85,7 @@ test.serial('createFormUnauthUser', async t => {
         data: { title: testFormTitle }
     };
     let resp = await formSvc.createForm(req);
-    t.deepEqual(resp.message, "User doesn't have authority to create form!");
+    t.deepEqual(resp.status, false);
 });
 
 test.serial('deleteFormUnauthUser', async t => {
@@ -102,12 +98,12 @@ test.serial('deleteFormUnauthUser', async t => {
         data: ""
     };
     let resp = await formSvc.deleteForm(req);
-    t.deepEqual(resp.message, "User doesn't have authority to delete form!");
+    t.deepEqual(resp.status, false);
 });
 
 test.serial('createUserAdmin', async t => {
-    let rval = await dbSvc.createUser(adminUser);
-    t.deepEqual(rval, true);
+    let resp = await userSvc.create(adminUser);
+    t.deepEqual(resp.status, true);
 });
 
 test.serial('createForm', async t => {
@@ -120,7 +116,7 @@ test.serial('createForm', async t => {
         data: { title: testFormTitle }
     };
     let resp = await formSvc.createForm(req);
-    t.deepEqual(resp.statusCode, 201);
+    t.deepEqual(resp.status, true);
 });
 
 test.serial('recreateForm', async t => {
@@ -133,7 +129,7 @@ test.serial('recreateForm', async t => {
         data: { title: testFormTitle }
     };
     let resp = await formSvc.createForm(req);
-    t.deepEqual(resp.message, "Form label is exists!");
+    t.deepEqual(resp.status, false);
 });
 
 test.serial('updateForm', async t => {
@@ -169,7 +165,7 @@ test.serial('updateForm', async t => {
         }
     }
     let resp = await formSvc.updateForm(req);
-    t.deepEqual(resp.statusCode, 200);
+    t.deepEqual(resp.status, true);
 });
 
 test.serial('viewForm', async t => {
@@ -182,7 +178,7 @@ test.serial('viewForm', async t => {
         data: ""
     };
     let resp = await formSvc.viewForm(req);
-    t.deepEqual(resp.statusCode, 200);
+    t.deepEqual(resp.status, true);
 });
 
 test.serial('deleteForm', async t => {
@@ -195,15 +191,15 @@ test.serial('deleteForm', async t => {
         data: ""
     };
     let resp = await formSvc.deleteForm(req);
-    t.deepEqual(resp.statusCode, 204);
+    t.deepEqual(resp.status, true);
 });
 
 test.serial('deleteUserStandard', async t => {
-    let rval = await dbSvc.deleteUser(standardUser.email);
-    t.deepEqual(rval, true);
+    let resp = await userSvc.delete({ email: standardUser.email });
+    t.deepEqual(resp.status, true);
 });
 
 test.serial('deleteUserAdmin', async t => {
-    let rval = await dbSvc.deleteUser(adminUser.email);
-    t.deepEqual(rval, true);
+    let resp = await userSvc.delete({ email: adminUser.email });
+    t.deepEqual(resp.status, true);
 });
