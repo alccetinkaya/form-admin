@@ -8,8 +8,8 @@ import { UserService } from './services/user.service';
 
 const PORT = 3000;
 
-const userSvc = new UserService();
 const dbSvc = new DatabaseService();
+const userSvc = new UserService(dbSvc);
 const formSvc = new FormService(dbSvc, userSvc);
 
 // run the server!
@@ -19,35 +19,13 @@ app.listen({ port: PORT }, (err) => {
 })
 
 app.post('/user/create', async (req, res) => {
-    let userData = userSvc.getUserData(req.body);
-    if (!userData) {
-        res.status(401).send("Create user data is invalid!");
-        return;
-    }
-
-    let rval = await dbSvc.createUser(userData);
-    if (!rval) {
-        res.status(404).send("User couldn't be created!");
-        return;
-    }
-
-    res.send("User has successfully created");
+    let resp = await userSvc.create(req.body);
+    res.status(resp.statusCode).send(resp.message);
 })
 
 app.post('/user/login', async (req, res) => {
-    let userLoginData = userSvc.getUserLoginData(req.body);
-    if (!userLoginData) {
-        res.status(401).send("User login data is invalid!");
-        return;
-    }
-
-    let rval = await dbSvc.loginUser(userLoginData);
-    if (!rval) {
-        res.status(404).send("User couldn't be logged in!");
-        return;
-    }
-
-    res.send("User has successfully logged in");
+    let resp = await userSvc.login(req.body);
+    res.status(resp.statusCode).send(resp.message);
 })
 
 app.post('/form/create', async (req, res) => {
