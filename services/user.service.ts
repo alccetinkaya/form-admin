@@ -1,11 +1,11 @@
 import { UserData, UserLoginData, UserRoleID } from "../models/user.data.model";
 
 const UserDataKeys = {
-    FIRST_NAME: "FirstName",
-    LAST_NAME: "LastName",
-    EMAIL: "Email",
-    PASSWORD: "Password",
-    ROLE: "Role"
+    FIRST_NAME: "first_name",
+    LAST_NAME: "last_name",
+    EMAIL: "email",
+    PASSWORD: "password",
+    ROLE: "role"
 }
 
 export interface UserSvcInterface {
