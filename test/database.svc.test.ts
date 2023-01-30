@@ -73,8 +73,8 @@ test.serial('deleteUserStandard', async t => {
     t.deepEqual(rval, true);
 });
 
-const testFormLabel = "testLabel";
-const testFormId = "testFormId";
+const testFormLabel = "dbSvcTestLabel";
+const testFormId = "dbSvcTestFormId";
 
 test.serial('addForm', async t => {
     let rval = await dbSvc.addForm(testFormLabel, testFormId);
