@@ -30,12 +30,6 @@ export class DatabaseService {
     }
 
     async createUser(userData: UserData): Promise<boolean> {
-        let isMailExists = await this.isUserEmailExists(userData.email);
-        if (isMailExists) {
-            console.log(`User email is exists!`);
-            return false;
-        }
-
         const rval = await prisma.user.create({
             data: {
                 first_name: userData.firstName,
