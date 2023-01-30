@@ -1,12 +1,13 @@
 import { PrismaClient } from '@prisma/client'
 import { FormTable } from '../models/form.data.model';
-import { AuthID, RoleAuthData } from '../models/role.data.model';
+import { AuthID } from '../models/role.data.model';
 import { UserData, UserLoginData, UserRoleID } from '../models/user.data.model'
 const prisma = new PrismaClient()
 
 export interface DatabaseSvcInterface {
     isUserEmailExists(email: string): Promise<boolean>;
     createUser(userData: UserData): Promise<boolean>;
+    deleteUser(email: string): Promise<boolean>;
     loginUser(userLoginData: UserLoginData): Promise<boolean>;
     getUserRole(userLoginData: UserLoginData): Promise<UserRoleID>;
     userHasAuth(roleId: UserRoleID, authId: AuthID): Promise<boolean>;
@@ -42,6 +43,18 @@ export class DatabaseService {
                 email: userData.email,
                 password: userData.password,
                 role_id: userData.role
+            }
+        }).catch(async (e) => {
+            console.log(`DB svc create user failed: ${e.message}`);
+        })
+
+        return rval ? true : false;
+    }
+
+    async deleteUser(email: string): Promise<boolean> {
+        const rval = await prisma.user.deleteMany({
+            where: {
+                email: email
             }
         }).catch(async (e) => {
             console.log(`DB svc create user failed: ${e.message}`);
